@@ -1,0 +1,19 @@
+alertmanager:
+  enabled: true
+  persistentVolume:
+    enabled: true
+    size: 2Gi
+    storageClass: standard
+server:
+  persistentVolume:
+    enabled: true
+    size: 8Gi
+    storageClass: standard
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+  retention: 15d

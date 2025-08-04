@@ -1,0 +1,87 @@
+adminPassword: "admin"
+
+persistence:
+  enabled: true
+  storageClassName: standard
+  size: 5Gi
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 100m
+    memory: 256Mi
+
+service:
+  type: ClusterIP
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        uid: prom
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        access: proxy
+        isDefault: true
+
+      - name: Loki
+        uid: loki
+        type: loki
+        url: http://loki-gateway.monitoring.svc.cluster.local/
+        access: proxy
+        jsonData:
+            derivedFields:
+              - datasourceUid: tempo
+                matcherRegex: ((\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+))
+                name: TraceID
+                url: $${__value.raw}
+            maxLines: 1000
+        version: 1
+
+      - name: Tempo
+        uid: tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.monitoring.svc.cluster.local:3200/
+        basicAuth: false
+        jsonData:
+          tracesToLogsV2:
+            datasourceUid: 'loki'
+            spanStartTimeShift: '-1h'
+            spanEndTimeShift: '1h'
+            tags: ['job', 'instance', 'pod', 'namespace']
+            filterByTraceID: false
+            filterBySpanID: false
+            customQuery: true
+            query: 'method="$${__span.tags.method}"'
+
+          tracesToMetrics:
+            datasourceUid: 'prom'
+            spanStartTimeShift: '-1h'
+            spanEndTimeShift: '1h'
+            tags:
+              - key: 'service.name'
+                value: 'service'
+              - key: 'job'
+            queries:
+              - name: 'Sample query'
+                query: 'sum(rate(traces_spanmetrics_latency_bucket{$$__tags}[5m]))'
+
+          tracesToProfiles:
+            datasourceUid: 'grafana-pyroscope-datasource'
+            tags: ['job', 'instance', 'pod', 'namespace']
+            profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds'
+            customQuery: true
+            query: 'method="$${__span.tags.method}"'
+
+
+      - name: Pyroscope
+        uid: grafana-pyroscope-datasource
+        type: grafana-pyroscope-datasource
+        access: proxy
+        url: http://pyroscope.monitoring.svc.cluster.local:4040
+        jsonData:
+          minStep: '15s'

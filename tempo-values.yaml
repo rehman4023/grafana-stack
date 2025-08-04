@@ -1,0 +1,26 @@
+tempo:
+  enabled: true
+
+  mode: "single"  # Use single-binary mode
+  metricsGenerator:
+    enabled: true
+
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  service:
+    type: ClusterIP
+    port: 3200
+    tempoQuery:
+      enabled: true

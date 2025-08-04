@@ -1,0 +1,14 @@
+pyroscope:
+  service:
+    type: ClusterIP
+  persistentVolume:
+    enabled: true
+    size: 5Gi
+    storageClass: standard
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 100m
+    memory: 256Mi
