@@ -86,14 +86,6 @@ Then open [http://localhost:3000](http://localhost:3000) and login with:
 - **Username:** `admin`
 - **Password:** `admin` (or your configured password)
 
-## 📚 Articles
-
-This stack is documented in a 4-part blog series:
-
-1. [**Part 1: Configuring Prometheus & Loki with Grafana**](./docs/01-prometheus-loki-grafana.md)
-2. [**Part 2: Configuring Tempo for Distributed Tracing**](./docs/02-tempo.md)
-3. [**Part 3: Configuring Pyroscope for Continuous Profiling**](./docs/03-pyroscope.md)
-4. [**Part 4: Putting it All Together - Full Observability Stack**](./docs/04-observability-stack.md)
 
 ## 📂 Directory Structure
 
@@ -106,11 +98,8 @@ This stack is documented in a 4-part blog series:
 │   ├── prometheus-values.yaml
 │   ├── tempo-values.yaml
 │   └── pyroscope-values.yaml
-├── docs/
-│   ├── 01-prometheus-loki-grafana.md
-│   ├── 02-tempo.md
-│   ├── 03-pyroscope.md
-│   └── 04-observability-stack.md
+├── sample-app/
+│   ├── hotrod.yaml
 └── README.md
 ```
 
